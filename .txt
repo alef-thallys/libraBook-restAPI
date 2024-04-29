@@ -1,0 +1,85 @@
+# Database Schema:
+
+Books (Resource Table)
+  - id (Primary Key, Integer)
+  - title (String)
+  - author (String)
+  - description (Text)
+  - quantity (Integer)
+  - created_at (Timestamp)
+  - updated_at (Timestamp)
+
+Users (Resource Table)
+  - id (Primary Key, Integer)
+  - name (String)
+  - email (String)
+  - password (String)
+  - role (String, Default: 'user')
+  - created_at (Timestamp)
+  - updated_at (Timestamp)
+
+Bookings (Transaction Table)
+  - id (Primary Key, Integer)
+  - user_id (Foreign Key referencing users.id, Integer)
+  - book_id (Foreign Key referencing books.id, Integer)
+  - status (String, Default: 'pending')
+  - borrowed_at (Timestamp)
+  - due_date (Date)
+  - returned_at (Timestamp)
+  - created_at (Timestamp)
+  - updated_at (Timestamp)
+
+Fines (Transaction Table)
+  - id (Primary Key, Integer)
+  - booking_id (Foreign Key referencing bookings.id, Integer)
+  - amount (Decimal)
+  - paid (Boolean)
+  - created_at (Timestamp)
+  - updated_at (Timestamp)
+
+# Endpoints:
+
+User Endpoints:
+
+Registration and Authentication:
+  - POST /api/users/register: Register a new user
+  - POST /api/users/login: Login a user
+  - POST /api/users/logout: Logout the authenticated user
+
+User Profile:
+  - GET /api/users/profile: Retrieve the authenticated user's profile
+  - PUT /api/users/profile: Update the authenticated user's profile
+
+Books: 
+  - GET /api/books: Retrieve all books
+  - GET /api/books/{id}: Retrieve a specific books by ID
+
+Booking:
+  - POST /api/books/{id}/bookings: Create a new booking (to borrow a book)
+  - GET /api/bookings: Retrieve all bookings
+  - GET /api/bookings/{id}: Retrieve a specific bookings by ID
+  - PUT /api/bookings/{id}/deliver: Mark a booking as delivered (when the book is handed over to the user)
+  - PUT /api/bookings/{id}/return: Mark a booking as returned (when the user returns the book)
+  - PUT /api/bookings/{id}/cancel: Cancel a booking
+
+Fines:
+  - GET /api/fines: Retrieve all fines
+  - GET /api/fines/{id}: Retrieve a specific fine by ID
+  - POST /api/fines/pay/all: Pay all fines
+  - POST /api/fines/{id}/pay: Pay specific fine
+
+Admin Endpoints:
+
+Users:
+  - GET /api/admin/users: Retrieve all users
+  - GET /api/admin/users/{id}: Retrieve a specific user by ID
+  - PUT /api/admin/users/{id}/promote: Promote a user to admin
+  - PUT /api/admin/users/{id}/demote: Demote an admin to user
+  - DELETE /api/admin/users/{id}: Delete a user
+
+Bookings:
+  - PUT /api/admin/bookings/{id}/process: Process a pending booking (update status to active)
+  - GET /api/admin/bookings/pending: Retrieve all pending bookings
+  - GET /api/admin/bookings/overdue: Retrieve all overdue bookings
+  - GET /api/admin/bookings/returned: Retrieve all returned bookings
+  - GET /api/admin/bookings/cancelled: Retrieve all cancelled bookings  
