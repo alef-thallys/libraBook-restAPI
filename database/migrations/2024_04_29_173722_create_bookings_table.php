@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('book_id')->constrained();
-          
+
             $table->string('status')->default('pending');
             $table->timestamp('borrowed_at')->nullable();
             $table->timestamp('due_date')->nullable();
             $table->timestamp('returned_at')->nullable();
-          
+
+            $table->softDeletes('deleted_at');
+
             $table->timestamps();
         });
     }

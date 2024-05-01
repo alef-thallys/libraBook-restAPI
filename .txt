@@ -58,8 +58,6 @@ Booking:
   - POST /api/books/{id}/bookings: Create a new booking (to borrow a book)
   - GET /api/bookings: Retrieve all bookings
   - GET /api/bookings/{id}: Retrieve a specific bookings by ID
-  - PUT /api/bookings/{id}/deliver: Mark a booking as delivered (when the book is handed over to the user)
-  - PUT /api/bookings/{id}/return: Mark a booking as returned (when the user returns the book)
   - PUT /api/bookings/{id}/cancel: Cancel a booking
 
 Fines:
@@ -79,7 +77,18 @@ Users:
 
 Bookings:
   - PUT /api/admin/bookings/{id}/process: Process a pending booking (update status to active)
+  - PUT /api/admin/bookings/{id}/deliver: Mark a booking as delivered (when the book is handed over to the user)
+  - PUT /api/admin/bookings/{id}/return: Mark a booking as returned (when the user returns the book)
+  - PUT /api/admin/bookings/{id}/cancel: Cancel a booking
+  
   - GET /api/admin/bookings/pending: Retrieve all pending bookings
   - GET /api/admin/bookings/overdue: Retrieve all overdue bookings
   - GET /api/admin/bookings/returned: Retrieve all returned bookings
   - GET /api/admin/bookings/cancelled: Retrieve all cancelled bookings  
+
+Books:
+  - GET /api/admin/books: Retrieve all books
+  - GET /api/admin/books/{id}: Retrieve a specific book by ID
+  - POST /api/admin/books: Create a new book
+  - PUT /api/admin/books/{id}: Update a book
+  - DELETE /api/admin/books/{id}: Delete a book
