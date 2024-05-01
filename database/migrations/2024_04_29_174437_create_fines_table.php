@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('book_id')->constrained();
-          
+
             $table->decimal('amount');
-            $table->boolean('paid');
-          
+            $table->boolean('paid')->default(false);
+
+            $table->softDeletes('deleted_at');
+
             $table->timestamps();
         });
     }

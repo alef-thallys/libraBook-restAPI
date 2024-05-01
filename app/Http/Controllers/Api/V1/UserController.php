@@ -15,40 +15,61 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  UserStoreRequest $request
+     * @return UserResource
+     */
     public function store(UserStoreRequest $request): UserResource
     {
         $data = $request->validated();
         $data['password'] = bcrypt($data['password']);
-
         $user = User::create($data);
 
         return UserResource::make($user)->additional(['message' => 'User created successfully']);
     }
 
+    /**
+     * Authenticate the user and return a token
+     *
+     * @param  UserLoginRequest $request
+     * @return UserResource
+     * @throws ValidationException
+     */
     public function login(UserLoginRequest $request): UserResource
     {
-        $credentials = $request->only('email', 'password');
-        $user = User::where('email', $credentials['email'])->first();
+        $data = $request->validated();
+        $user = User::where('email', $data['email'])->first();
 
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        if (!$user || !Hash::check($data['password'], $user->password)) {
+            throw ValidationException::withMessages(['email' => ['The provided credentials are incorrect.']]);
         }
 
-        $user->tokens()->delete();
-
-        $token = $user->createToken('user-token-' . $user->id, ['role:' . $user->role]);
+        $abilities = ['role:' . $user->role];
+        $token = $user->createToken('auth-token', $abilities);
 
         return UserResource::make($user)->additional(['token' => $token->plainTextToken]);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @return UserResource
+     */
     public function show(): UserResource
     {
         $user = auth()->user();
+
         return UserResource::make($user);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  UserUpdateRequest $request
+     * @return UserResource
+     */
     public function update(UserUpdateRequest $request): UserResource
     {
         $data = $request->validated();
@@ -63,10 +84,16 @@ class UserController extends Controller
         return UserResource::make($user)->additional(['message' => 'User updated successfully']);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  Request $request
+     * @return JsonResponse
+     */
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json(['message' => 'Successfully logged out']);
     }
 }

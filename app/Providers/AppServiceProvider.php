@@ -20,8 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('can-handle', function ($user, $modelId) {
-            return $user->id === $modelId;
+        Gate::define('is-owner', function ($user, $model_id) {
+            return $user->id === $model_id;
         });
     }
 }

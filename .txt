@@ -71,8 +71,6 @@ Admin Endpoints:
 Users:
   - GET /api/admin/users: Retrieve all users
   - GET /api/admin/users/{id}: Retrieve a specific user by ID
-  - PUT /api/admin/users/{id}/promote: Promote a user to admin
-  - PUT /api/admin/users/{id}/demote: Demote an admin to user
   - DELETE /api/admin/users/{id}: Delete a user
 
 Bookings:

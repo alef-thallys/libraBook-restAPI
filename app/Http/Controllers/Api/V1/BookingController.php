@@ -7,33 +7,63 @@ use App\Http\Resources\BookingCollection;
 use App\Http\Resources\BookingResource;
 use App\Models\Book;
 use App\Models\Booking;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BookingController extends Controller
 {
-    public function index()
+    /**
+     * Return all bookings of the authenticated user.
+     *
+     * @return BookingCollection
+     */
+    public function index(): BookingCollection
     {
-        $bookings = Booking::where('user_id', auth()->user()->id)->paginate(10)->load(['user', 'book']);
+        $userId = auth()->user()->id;
+        $bookings = Booking::where('user_id', $userId)->paginate(20);
+
+        if ($bookings->isEmpty()) {
+            throw new NotFoundHttpException('No bookings to show');
+        }
+
+        $bookings->load(['book']);
+
         return BookingCollection::make($bookings);
     }
 
-    public function show($id)
+    /**
+     * Return a booking by its ID.
+     *
+     * @param int $id
+     * @return BookingResource
+     * @throws NotFoundHttpException
+     */
+    public function show(int $id): BookingResource
     {
         $booking = Booking::find($id);
 
-        if (!$booking) throw new NotFoundHttpException('Booking not found');
+        if (!$booking) {
+            throw new NotFoundHttpException('Booking not found');
+        }
 
-        Gate::authorize('can-handle', $booking->user_id);
+        Gate::authorize('is-owner', $booking->user_id);
 
         return BookingResource::make($booking);
     }
 
-    public function store($id)
+    /**
+     * Create a new booking for the authenticated user.
+     *
+     * @param int $id
+     * @return BookingResource
+     * @throws NotFoundHttpException
+     * @throws \Exception
+     */
+    public function store(int $id): BookingResource
     {
         $book = Book::find($id);
         $user = auth()->user();
-
         $bookingAvailable = $book || $book->quantity > 0;
 
         if (!$bookingAvailable) {
@@ -42,32 +72,35 @@ class BookingController extends Controller
             throw new \Exception('Book already borrowed');
         }
 
-        $book->decrement('quantity');
-
-        $booking = Booking::create([
+        Booking::create([
             'book_id' => $book->id,
             'user_id' => $user->id,
         ]);
 
+        $booking = Booking::where('book_id', $book->id)->where('user_id', $user->id)->first();
+        $book->decrement('quantity');
         $booking->load(['user', 'book']);
 
-        return response()->json([
-            'data' => [
-                'user' => $booking->user->name,
-                'book' => $booking->book->title,
-                'status' => $booking->status
-            ],
-            'message' => 'Booking created successfully, please wait for confirmation'
-        ]);
+        return BookingResource::make($booking)
+            ->additional(['message' => 'Booking created successfully, please wait for confirmation']);
     }
 
-    public function cancel($id)
+    /**
+     * Cancel a booking of the authenticated user.
+     *
+     * @param int $id
+     * @return JsonResponse
+     * @throws NotFoundHttpException
+     */
+    public function cancel(int $id): JsonResponse
     {
         $booking = Booking::find($id);
 
-        if (!$booking) throw new NotFoundHttpException('Booking not found');
+        if (!$booking) {
+            throw new NotFoundHttpException('Booking not found');
+        }
 
-        Gate::authorize('can-handle', $booking->user_id);
+        Gate::authorize('is-owner', $booking->user_id);
 
         $booking->delete();
         $booking->book->increment('quantity');
