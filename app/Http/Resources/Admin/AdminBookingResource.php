@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class BookingResource extends JsonResource
+class AdminBookingResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,12 +16,16 @@ class BookingResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
             'book_id' => $this->book_id,
-            'book' => $this->book->title,
             'status' => $this->status,
+
             'borrowed_at' => $this->borrowed_at,
             'due_date' => $this->due_date,
-            'returned_at' => $this->returned_at
+            'returned_at' => $this->returned_at,
+
+            'created_at' => $this->created_at->diffForHumans(),
+            'updated_at' => $this->updated_at->diffForHumans()
         ];
     }
 }

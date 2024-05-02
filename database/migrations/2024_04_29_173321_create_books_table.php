@@ -20,6 +20,8 @@ return new class extends Migration
             $table->integer('quantity');
             $table->integer('published_year');
 
+            $table->softDeletes('deleted_at');
+
             $table->timestamps();
         });
     }

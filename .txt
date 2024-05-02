@@ -1,44 +1,3 @@
-# Database Schema:
-
-Books (Resource Table)
-  - id (Primary Key, Integer)
-  - title (String)
-  - author (String)
-  - description (Text)
-  - quantity (Integer)
-  - created_at (Timestamp)
-  - updated_at (Timestamp)
-
-Users (Resource Table)
-  - id (Primary Key, Integer)
-  - name (String)
-  - email (String)
-  - password (String)
-  - role (String, Default: 'user')
-  - created_at (Timestamp)
-  - updated_at (Timestamp)
-
-Bookings (Transaction Table)
-  - id (Primary Key, Integer)
-  - user_id (Foreign Key referencing users.id, Integer)
-  - book_id (Foreign Key referencing books.id, Integer)
-  - status (String, Default: 'pending')
-  - borrowed_at (Timestamp)
-  - due_date (Date)
-  - returned_at (Timestamp)
-  - created_at (Timestamp)
-  - updated_at (Timestamp)
-
-Fines (Transaction Table)
-  - id (Primary Key, Integer)
-  - booking_id (Foreign Key referencing bookings.id, Integer)
-  - amount (Decimal)
-  - paid (Boolean)
-  - created_at (Timestamp)
-  - updated_at (Timestamp)
-
-# Endpoints:
-
 User Endpoints:
 
 Registration and Authentication:
@@ -55,10 +14,9 @@ Books:
   - GET /api/books/{id}: Retrieve a specific books by ID
 
 Booking:
-  - POST /api/books/{id}/bookings: Create a new booking (to borrow a book)
   - GET /api/bookings: Retrieve all bookings
   - GET /api/bookings/{id}: Retrieve a specific bookings by ID
-  - PUT /api/bookings/{id}/cancel: Cancel a booking
+  - POST /api/books/{id}/bookings: Create a booking
 
 Fines:
   - GET /api/fines: Retrieve all fines
@@ -73,16 +31,14 @@ Users:
   - GET /api/admin/users/{id}: Retrieve a specific user by ID
   - DELETE /api/admin/users/{id}: Delete a user
 
-Bookings:
-  - PUT /api/admin/bookings/{id}/process: Process a pending booking (update status to active)
-  - PUT /api/admin/bookings/{id}/deliver: Mark a booking as delivered (when the book is handed over to the user)
-  - PUT /api/admin/bookings/{id}/return: Mark a booking as returned (when the user returns the book)
-  - PUT /api/admin/bookings/{id}/cancel: Cancel a booking
-  
-  - GET /api/admin/bookings/pending: Retrieve all pending bookings
-  - GET /api/admin/bookings/overdue: Retrieve all overdue bookings
-  - GET /api/admin/bookings/returned: Retrieve all returned bookings
-  - GET /api/admin/bookings/cancelled: Retrieve all cancelled bookings  
+Bookings:                 
+    You can retrive all bookings with a filter parameter of active, returned or overdue; 
+    e.g. /api/admin/bookings?filter=active
+
+  - GET /api/admin/bookings: Retrieve all bookings
+  - GET /api/admin/bookings/{id}: Retrieve a specific booking by ID
+  - GET /api/admin/bookings/user/{id}: Retrieve all bookings of a specific user
+  - PUT /api/admin/bookings/{id}/return: Mark a booking as returned
 
 Books:
   - GET /api/admin/books: Retrieve all books

@@ -19,13 +19,20 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'admin',
             'email' => 'admin@localhost',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('12345678Abc'),
             'role' => 'admin',
+        ]);
+
+        User::create([
+            'name' => 'user',
+            'email' => 'user@localhost',
+            'password' => Hash::make('12345678Abc'),
+            'role' => 'user',
         ]);
 
         User::factory(5)->create();
         Book::factory(10)->create();
-        // Booking::factory(5)->create();
-        // Fine::factory(5)->create();
+        Booking::factory(5)->create();
+        Fine::factory(5)->create();
     }
 }

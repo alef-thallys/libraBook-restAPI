@@ -18,18 +18,42 @@ class BookingFactory extends Factory
      */
     public function definition(): array
     {
+        $availableStatus = ['active', 'returned', 'overdue'];
+        $status = $availableStatus[random_int(0, count($availableStatus) - 1)];
 
-        $availableStatus = ['pending', 'confirmed', 'rejected', 'borrowed', 'returned'];
-        $status = $availableStatus[random_int(0, 4)];
+        $borrowed_at = null;
+        $due_date = null;
+        $returned_at = null;
+
+        switch ($status) {
+            case 'active':
+                $borrowed_at = now();
+                $due_date = now()->addDay(20);
+                break;
+            case 'returned':
+                $borrowed_at = now()->subDay(20);
+                $returned_at = now()->subDay(random_int(1, 10));
+                $due_date = now();
+                break;
+            case 'overdue':
+                $borrowed_at = now()->subDay(20);
+                $due_date = now()->addDay(22);
+                break;
+        }
 
         return [
             'user_id' => User::inRandomOrder()->first()->id,
             'book_id' => Book::inRandomOrder()->first()->id,
 
             'status' => $status,
-            'borrowed_at' => $status === 'borrowed' ? now() : null,
-            'due_date' => $status === 'borrowed' ? now()->addDay(14) : null,
-            'returned_at' => $status === 'returned' ? now() : null,
+            'borrowed_at' => $borrowed_at,
+            'due_date' => $due_date,
+            'returned_at' => $returned_at,
         ];
+
+        // return [
+        //     'user_id' => User::inRandomOrder()->first()->id,
+        //     'book_id' => Book::inRandomOrder()->first()->id,
+        // ];
     }
 }

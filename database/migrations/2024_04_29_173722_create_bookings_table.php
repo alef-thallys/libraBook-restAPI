@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->foreignId('book_id')->constrained();
 
-            $table->string('status')->default('pending');
-            $table->timestamp('borrowed_at')->nullable();
-            $table->timestamp('due_date')->nullable();
+            $table->string('status');
+
+            $table->timestamp('borrowed_at');
+            $table->timestamp('due_date');
             $table->timestamp('returned_at')->nullable();
 
             $table->softDeletes('deleted_at');
