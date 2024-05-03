@@ -24,7 +24,6 @@ class BookUpdateRequest extends FormRequest
         return [
             'author' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:500'],
-            'quantity' => ['nullable', 'integer'],
             'published_year' => ['nullable', 'integer', 'between:1000,' . date('Y')],
         ];
     }

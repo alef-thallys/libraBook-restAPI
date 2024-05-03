@@ -3,99 +3,67 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\FineCollection;
 use App\Http\Resources\FineResource;
 use App\Models\Fine;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FineController extends Controller
 {
     /**
+     * The authenticated user
+     *
+     * @var User
+     */
+    protected $user;
+
+    /**
+     * The Fine model
+     *
+     * @var Fine
+     */
+    protected $model;
+
+    /**
+     * Constructor
+     *
+     * @param Fine $fine The Fine model
+     */
+    public function __construct(Fine $fine)
+    {
+        $this->user = auth()->user();
+        $this->model = $fine;
+    }
+
+    /**
      * Display a list of fines for the authenticated user
      *
-     * @return FineCollection
+     * @return FineResource fine
      */
-    public function index()
+    public function index(): FineResource
     {
-        $user_id = auth()->user()->id;
-        $fines = Fine::where('user_id', $user_id)->paginate(20);
-
-        if ($fines->isEmpty()) {
-            throw new NotFoundHttpException('No fines to show');
+        try {
+            $fines = $this->model->where('user_id', $this->user->id)->firstOrFail()->load('book');
+        } catch (ModelNotFoundException $exception) {
+            throw new NotFoundHttpException('Do not have any fine');
         }
-
-        $fines->load(['book']);
-
-        return FineCollection::make($fines);
+        return FineResource::make($fines);
     }
 
     /**
-     * Display a fine
+     * Pay the fine for the authenticated user
      *
-     * @param int $id
-     * @return FineResource
-     * @throws NotFoundHttpException
+     * @return JsonResponse The success message
      */
-    public function show(int $id)
+    public function pay(): JsonResponse
     {
-        $fine = Fine::find($id);
-
-        if (!$fine) {
-            throw new NotFoundHttpException('Fine not found');
+        try {
+            $fine = $this->model->where('user_id', $this->user->id)->firstOrFail();
+        } catch (ModelNotFoundException $exception) {
+            throw new NotFoundHttpException('Do not have any fine');
         }
-
-        Gate::authorize('is-owner', $fine->user_id);
-
-        return FineResource::make($fine);
-    }
-
-    /**
-     * Pay all fines for the authenticated user
-     *
-     * @return JsonResponse
-     */
-    public function payAll()
-    {
-        $user_id = auth()->user()->id;
-        $fines = Fine::where('user_id', $user_id)->get();
-
-        if ($fines->isEmpty()) {
-            throw new NotFoundHttpException('No fines to show');
-        }
-
-        foreach ($fines as $fine) {
-            $fine->update(['paid' => true]);
-            $fine->delete();
-        }
-
-        return response()->json([
-            'message' => 'All fines paid successfully'
-        ]);
-    }
-
-    /**
-     * Pay a fine
-     *
-     * @param int $id
-     * @return JsonResponse
-     * @throws NotFoundHttpException
-     */
-    public function pay(int $id)
-    {
-        $fine = Fine::find($id);
-
-        if (!$fine) {
-            throw new NotFoundHttpException('Fine not found');
-        }
-
-        Gate::authorize('is-owner', $fine->user_id);
-
-        $fine->update(['paid' => true]);
         $fine->delete();
-
-        return response()->json([
-            'message' => 'Fine paid successfully'
-        ]);
+        return response()->json(['message' => 'Fine paid successfully']);
     }
 }

@@ -17,17 +17,17 @@ class AdminBookingController extends Controller
      * @param Request $request
      * @return AdminBookingCollection
      */
-    public function index(Request $request): AdminBookingCollection
+    public function index(?int $user_id = null): AdminBookingCollection
     {
-        $status = $request->query('filter');
+        $bookings = Booking::paginate(20);
 
-        $filters = ['active', 'returned', 'overdue'];
+        if ($bookings->isEmpty()) {
+            throw new NotFoundHttpException('No bookings to show');
+        }
 
-        $bookings = Booking::where(function ($query) use ($status, $filters) {
-            if (in_array($status, $filters)) {
-                $query->where('status', $status);
-            }
-        })->paginate(20);
+        if ($user_id) {
+            $bookings = Booking::where('user_id', $user_id)->paginate(20);
+        }
 
         return AdminBookingCollection::make($bookings);
     }
@@ -47,45 +47,5 @@ class AdminBookingController extends Controller
         }
 
         return AdminBookingResource::make($booking);
-    }
-
-    /**
-     * Returns a paginated list of bookings of a specified user.
-     *
-     * @param int $id The user ID
-     *
-     * @return AdminBookingCollection
-     *
-     * @throws NotFoundHttpException If no bookings were found for the user
-     */
-    public function showByUser(int $id): AdminBookingCollection
-    {
-        $bookings = Booking::where('user_id', $id)->paginate(20);
-
-        if ($bookings->isEmpty()) {
-            throw new NotFoundHttpException('No bookings to show');
-        }
-
-        return AdminBookingCollection::make($bookings);
-    }
-
-    /**
-     * Mark the specified resource as returned.
-     *
-     * @param int $id
-     * @return AdminBookingResource
-     */
-    public function return(int $id): AdminBookingResource
-    {
-        $booking = Booking::find($id)->load('book');
-
-        if (!$booking) {
-            throw new NotFoundHttpException('Booking not found');
-        }
-
-        $booking->update(['status' => 'returned']);
-        $booking->book->increment('quantity');
-
-        return AdminBookingResource::make($booking)->additional(['message' => 'Booking returned successfully']);
     }
 }

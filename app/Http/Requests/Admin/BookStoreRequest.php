@@ -25,7 +25,6 @@ class BookStoreRequest extends FormRequest
             'title' => ['required', 'string', 'max:255', 'unique:books,title'],
             'author' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:500'],
-            'quantity' => ['required', 'integer'],
             'published_year' => ['required', 'integer', 'between:1000,' . date('Y')],
         ];
     }

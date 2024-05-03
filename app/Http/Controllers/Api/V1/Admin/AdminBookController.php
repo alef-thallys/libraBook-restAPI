@@ -19,12 +19,16 @@ class AdminBookController extends Controller
      * @return AdminBookCollection
      * @throws NotFoundHttpException
      */
-    public function index(): AdminBookCollection
+    public function index(?string $title = null): AdminBookCollection
     {
         $books = Book::paginate(20);
 
         if ($books->isEmpty()) {
             throw new NotFoundHttpException('No books to show');
+        }
+
+        if ($title) {
+            $books = Book::where('title', 'like', '%' . $title . '%')->paginate(20);
         }
 
         return AdminBookCollection::make($books);
@@ -59,6 +63,8 @@ class AdminBookController extends Controller
         $data = $request->validated();
 
         $book = Book::create($data);
+
+        $book->stock()->create();
 
         return AdminBookResource::make($book)
             ->additional(['message' => 'Book created successfully']);
@@ -103,6 +109,10 @@ class AdminBookController extends Controller
 
         if (!$book) {
             throw new NotFoundHttpException('Book not found');
+        }
+
+        if ($book->bookings->count() > 0) {
+            throw new NotFoundHttpException('Book has active bookings');
         }
 
         $book->delete();

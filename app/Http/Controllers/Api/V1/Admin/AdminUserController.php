@@ -72,6 +72,10 @@ class AdminUserController extends Controller
             throw new NotFoundHttpException('Admin cannot delete himself');
         }
 
+        if ($user->bookings->count() > 0) {
+            throw new NotFoundHttpException('User has active bookings');
+        }
+
         $user->tokens()->delete();
         $user->delete();
 

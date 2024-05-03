@@ -21,9 +21,7 @@ class FineFactory extends Factory
         return [
             'user_id' => User::inRandomOrder()->first()->id,
             'book_id' => Book::inRandomOrder()->first()->id,
-
             'amount' => $this->faker->numberBetween(1, 50),
-            'paid' => $this->faker->boolean(),
         ];
     }
 }

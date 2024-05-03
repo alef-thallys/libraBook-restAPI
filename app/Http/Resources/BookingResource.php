@@ -16,12 +16,12 @@ class BookingResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'book_id' => $this->book_id,
-            'book' => $this->book->title,
             'status' => $this->status,
             'borrowed_at' => $this->borrowed_at,
             'due_date' => $this->due_date,
-            'returned_at' => $this->returned_at
+            'returned_at' => $this->returned_at,
+
+            'book' => BookResource::make($this->book)
         ];
     }
 }

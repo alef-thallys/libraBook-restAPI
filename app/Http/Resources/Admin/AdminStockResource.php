@@ -5,7 +5,7 @@ namespace App\Http\Resources\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AdminBookResource extends JsonResource
+class AdminStockResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,12 +16,10 @@ class AdminBookResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'author' => $this->author,
-            'description' => $this->description,
-            'quantity' => $this->stock->quantity,
-            'available' => $this->stock->available ? 'Yes' : 'No',
-            'published_year' => $this->published_year,
+            'book_id' => $this->book_id,
+            'available' => $this->available,
+            'quantity' => $this->quantity,
+
             'created_at' => $this->created_at->diffForHumans(),
             'updated_at' => $this->updated_at->diffForHumans(),
         ];

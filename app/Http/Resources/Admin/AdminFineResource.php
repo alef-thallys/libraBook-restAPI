@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FineResource extends JsonResource
+class AdminFineResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,12 @@ class FineResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'book' => $this->book->title,
+            'user_id' => $this->user_id,
+            'book_id' => $this->book_id,
             'amount' => $this->amount,
-            'user' => UserResource::make($this->user),
-        ];
+            'paid' => $this->paid ? 'Yes' : 'No',
+
+            'created_at' => $this->created_at->diffForHumans(),
+            'updated_at' => $this->updated_at->diffForHumans()];
     }
 }

@@ -17,10 +17,8 @@ return new class extends Migration
             $table->string('title')->unique();
             $table->string('author');
             $table->text('description');
-            $table->integer('quantity');
-            $table->integer('published_year');
 
-            $table->softDeletes('deleted_at');
+            $table->integer('published_year');
 
             $table->timestamps();
         });

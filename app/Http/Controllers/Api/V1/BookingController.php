@@ -3,90 +3,136 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\BookingCollection;
 use App\Http\Resources\BookingResource;
 use App\Models\Book;
 use App\Models\Booking;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BookingController extends Controller
 {
     /**
-     * Return all bookings of the authenticated user.
+     * The user model instance.
      *
-     * @return BookingCollection
+     * @var \App\Models\User
      */
-    public function index(): BookingCollection
+    protected $user;
+
+    /**
+     * The booking model instance.
+     *
+     * @var \App\Models\Booking
+     */
+    protected $model;
+
+    /**
+     * The book model instance.
+     *
+     * @var \App\Models\Book
+     */
+    protected $book;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param \App\Models\Booking $model The booking model instance
+     * @param \App\Models\Book $book The book model instance
+     * @return void
+     */
+    public function __construct(Booking $model, Book $book)
     {
-        $userId = auth()->user()->id;
-        $bookings = Booking::where('user_id', $userId)->paginate(20);
-
-        if ($bookings->isEmpty()) {
-            throw new NotFoundHttpException('No bookings to show');
-        }
-
-        $bookings->load(['book']);
-
-        return BookingCollection::make($bookings);
+        $this->user = auth()->user();
+        $this->model = $model;
+        $this->book = $book;
     }
 
     /**
-     * Return a booking by its ID.
+     * Get the booking of the current user.
      *
-     * @param int $id
-     * @return BookingResource
-     * @throws NotFoundHttpException
+     * @return \App\Http\Resources\BookingResource
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the user does not have any booking
      */
-    public function show(int $id): BookingResource
+    public function index(): BookingResource
     {
-        $booking = Booking::find($id);
-
-        if (!$booking) {
-            throw new NotFoundHttpException('Booking not found');
+        try {
+            $booking = $this->model->where('user_id', $this->user->id)->firstOrFail()->load('book.stock');
+        } catch (ModelNotFoundException $exception) {
+            throw new NotFoundHttpException('Do not have any booking');
         }
-
-        Gate::authorize('is-owner', $booking->user_id);
-
         return BookingResource::make($booking);
     }
 
     /**
-     * Create a new booking for the authenticated user.
+     * Create a new booking for the current user.
      *
-     * @param int $id
-     * @return BookingResource
-     * @throws NotFoundHttpException
-     * @throws \Exception
+     * @param int $id The book id
+     * @return \App\Http\Resources\BookingResource
+     * @throws \Exception If the user already has a booking
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the book is not found or not available
      */
     public function store(int $id): BookingResource
     {
-        $book = Book::find($id);
-        $user = auth()->user();
-        $bookingAvailable = $book->quantity > 0;
+        $userAlreadyHasBooking = $this->user->bookings;
+        $defaultDueDate = 20;
 
-        if (!$book) {
+        try {
+            $book = $this->book->findOrFail($id)->load('stock');
+        } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Book not found');
-        } elseif (!$bookingAvailable) {
+        }
+
+        $stock = $book->stock;
+
+        if ($userAlreadyHasBooking) {
+            throw new \Exception('You already have a booking, please return it before borrowing a new one');
+        } elseif (!$stock->available) {
             throw new NotFoundHttpException('Book not available for borrowing, please try again later');
-        } elseif ($user->bookings->contains('book_id', $book->id)) {
-            throw new \Exception('You already have a booking for this book');
         }
 
         Booking::create([
             'book_id' => $book->id,
-            'user_id' => $user->id,
-            'status' => 'active',
+            'user_id' => $this->user->id,
             'borrowed_at' => now(),
-            'due_date' => now()->addDay(20),
+            'due_date' => now()->addDay($defaultDueDate),
         ]);
 
-        $book->decrement('quantity');
-        $booking = Booking::where('book_id', $book->id)->where('user_id', $user->id)->first();
-        $booking->load(['user', 'book']);
+        $booking = $this->model->where('user_id', $this->user->id)->firstOrFail()->load('book.stock');
+        $stock = $booking->load('book.stock')->book->stock;
+        $stock->decrement('quantity');
+
+        if ($stock->quantity === 1) {
+            $stock->update(['available' => false]);
+        }
 
         return BookingResource::make($booking)
             ->additional(['message' => 'Booking created successfully']);
+    }
+
+    /**
+     * Return a specific booking of the current user.
+     *
+     * @return \App\Http\Resources\BookingResource
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the user does not have any booking to return
+     */
+    public function return(): BookingResource
+    {
+        try {
+            $booking = $this->model->where('user_id', $this->user->id)->firstOrFail()->load('book.stock');
+        } catch (ModelNotFoundException $exception) {
+            throw new NotFoundHttpException('Do not have any booking to return');
+        }
+
+        $stock = $booking->book->stock;
+
+        $stock->increment('quantity');
+        $stock->update(['available' => true]);
+        $stock->save();
+
+        $booking->update(['status' => 'returned', 'returned_at' => now()]);
+        $booking->save();
+        $booking->delete();
+
+        return BookingResource::make($booking)
+            ->additional(['message' => 'Booking returned successfully']);
     }
 }

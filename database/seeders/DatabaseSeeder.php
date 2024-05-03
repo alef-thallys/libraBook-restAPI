@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Book;
 use App\Models\Booking;
 use App\Models\Fine;
+use App\Models\Stock;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -30,9 +31,9 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
         ]);
 
-        User::factory(5)->create();
-        Book::factory(10)->create();
-        Booking::factory(5)->create();
-        Fine::factory(5)->create();
+        User::factory(10)->create();
+        Stock::factory(10)->create();
+        Booking::factory(10)->create();
+        Fine::factory(10)->create();
     }
 }
