@@ -43,21 +43,18 @@ Route::prefix('V1')->group(function () {
             Route::get('users/{id}', [AdminUserController::class, 'show']);
             Route::delete('users/{id}', [AdminUserController::class, 'destroy']);
 
-            // Bookings endpoints
-            Route::get('bookings', [AdminBookingController::class, 'index']);
-            Route::get('bookings/{id}', [AdminBookingController::class, 'show']);
-            Route::get('bookings/user/{id}', [AdminBookingController::class, 'showByUser']);
-            Route::put('bookings/{id}/return', [AdminBookingController::class, 'return']);
-
-
-
-
             // Book endpoints
             Route::get('books', [AdminBookController::class, 'index']);
             Route::get('books/{id}', [AdminBookController::class, 'show']);
             Route::post('books', [AdminBookController::class, 'store']);
             Route::put('books/{id}', [AdminBookController::class, 'update']);
             Route::delete('books/{id}', [AdminBookController::class, 'destroy']);
+
+            // Bookings endpoints
+            Route::get('bookings', [AdminBookingController::class, 'index']);
+            Route::get('bookings/{id}', [AdminBookingController::class, 'show']);
+            Route::get('bookings/user/{id}', [AdminBookingController::class, 'showByUser']);
+            Route::put('bookings/{id}/return', [AdminBookingController::class, 'return']);
         });
     });
 });
