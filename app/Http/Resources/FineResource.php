@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,11 +15,12 @@ class FineResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $booking = Booking::withTrashed()->whereUserId($this->user->id)->first();
+
         return [
             'id' => $this->id,
-            'book' => $this->book->title,
             'amount' => $this->amount,
-            'user' => UserResource::make($this->user),
+            'booking' => BookingResource::make($booking),
         ];
     }
 }

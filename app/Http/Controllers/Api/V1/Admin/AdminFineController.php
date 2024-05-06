@@ -6,33 +6,34 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\AdminFineCollection;
 use App\Http\Resources\Admin\AdminFineResource;
 use App\Models\Fine;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdminFineController extends Controller
 {
-    public function index(?int $user_id = null,): AdminFineCollection
-    {
-        $fines = Fine::paginate(20);
+    protected $model;
 
+    public function __construct(Fine $model)
+    {
+        $this->model = $model;
+    }
+
+    public function index(): AdminFineCollection
+    {
+        $fines = $this->model->paginate(20);
         if ($fines->isEmpty()) {
             throw new NotFoundHttpException('No fines to show');
         }
-
-        if ($user_id) {
-            $fines = Fine::where('user_id', $user_id)->paginate(20);
-        }
-
-        return AdminFineCollection::make($fines);
+        return new AdminFineCollection($fines);
     }
 
     public function show(int $id): AdminFineResource
     {
-        $fine = Fine::find($id);
-
-        if (!$fine) {
+        try {
+            $fine = $this->model->findOrFail($id);
+        } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Fine not found');
         }
-
-        return AdminFineResource::make($fine);
+        return new AdminFineResource($fine);
     }
 }

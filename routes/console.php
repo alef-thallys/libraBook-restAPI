@@ -1,8 +1,21 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Models\Booking;
+use App\Models\Fine;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+Schedule::call(function () {
+    $bookings = Booking::with('fine')
+        ->where('due_date', '<', now())
+        ->whereStatus('active')
+        ->get();
+
+    foreach ($bookings as $booking) {
+        Fine::create([
+            'user_id' => $booking->user_id,
+            'book_id' => $booking->id,
+            'amount' => 10,
+        ]);
+        $booking->update(['status' => 'overdue']);
+    }
+})->everySecond();

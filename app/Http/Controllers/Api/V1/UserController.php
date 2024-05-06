@@ -15,35 +15,25 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  UserStoreRequest $request
-     * @return UserResource
-     */
-    public function store(UserStoreRequest $request): UserResource
-    {
-        // Validate and create a new user
-        $data = $request->validated();
-        $data['password'] = bcrypt($data['password']);
-        $user = User::create($data);
+    protected $model;
 
-        return UserResource::make($user)
-            ->additional(['message' => 'User created successfully']);
+    public function __construct(User $user)
+    {
+        $this->model = $user;
     }
 
-    /**
-     * Authenticate the user and return a token
-     *
-     * @param  UserLoginRequest $request
-     * @return UserResource
-     * @throws ValidationException
-     */
+    public function store(UserStoreRequest $request): UserResource
+    {
+        $data = $request->validated();
+        $data['password'] = bcrypt($data['password']);
+        $user = $this->model->create($data);
+        return UserResource::make($user);
+    }
+
     public function login(UserLoginRequest $request): UserResource
     {
-        // Validate the login request and authenticate the user
         $data = $request->validated();
-        $user = User::where('email', $data['email'])->first();
+        $user = $this->model->where('email', $data['email'])->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages(
@@ -51,60 +41,32 @@ class UserController extends Controller
             );
         }
 
-        // Create the access token for the user
         $abilities = ['role:' . $user->role];
         $token = $user->createToken('auth-token', $abilities);
-
-        return UserResource::make($user)
-            ->additional(['token' => $token->plainTextToken]);
+        return UserResource::make($user)->additional(['token' => $token->plainTextToken]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @return UserResource
-     */
     public function show(): UserResource
     {
-        // Get the authenticated user
         $user = auth()->user();
-
         return UserResource::make($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  UserUpdateRequest $request
-     * @return UserResource
-     */
     public function update(UserUpdateRequest $request): UserResource
     {
-        // Validate and update the authenticated user
         $data = $request->validated();
-
         if (isset($data['password'])) {
             $data['password'] = bcrypt($data['password']);
         }
 
-        $user = User::findOrFail(auth()->user()->id);
+        $user = $this->model->find(auth()->user()->id);
         $user->update($data);
-
-        return UserResource::make($user)
-            ->additional(['message' => 'User updated successfully']);
+        return UserResource::make($user);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  Request $request
-     * @return JsonResponse
-     */
     public function logout(Request $request): JsonResponse
     {
-        // Revoke the authenticated user's access token
         $request->user()->currentAccessToken()->delete();
-
         return response()->json(['message' => 'Successfully logged out']);
     }
 }

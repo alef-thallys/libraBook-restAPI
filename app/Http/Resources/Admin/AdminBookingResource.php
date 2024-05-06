@@ -24,8 +24,8 @@ class AdminBookingResource extends JsonResource
             'due_date' => $this->due_date,
             'returned_at' => $this->returned_at,
 
-            'created_at' => $this->created_at->diffForHumans(),
-            'updated_at' => $this->updated_at->diffForHumans()
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
         ];
     }
 }

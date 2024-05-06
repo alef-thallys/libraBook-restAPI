@@ -11,34 +11,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BookingController extends Controller
 {
-    /**
-     * The user model instance.
-     *
-     * @var \App\Models\User
-     */
     protected $user;
-
-    /**
-     * The booking model instance.
-     *
-     * @var \App\Models\Booking
-     */
     protected $model;
-
-    /**
-     * The book model instance.
-     *
-     * @var \App\Models\Book
-     */
     protected $book;
 
-    /**
-     * Create a new controller instance.
-     *
-     * @param \App\Models\Booking $model The booking model instance
-     * @param \App\Models\Book $book The book model instance
-     * @return void
-     */
     public function __construct(Booking $model, Book $book)
     {
         $this->user = auth()->user();
@@ -46,33 +22,20 @@ class BookingController extends Controller
         $this->book = $book;
     }
 
-    /**
-     * Get the booking of the current user.
-     *
-     * @return \App\Http\Resources\BookingResource
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the user does not have any booking
-     */
     public function index(): BookingResource
     {
         try {
-            $booking = $this->model->where('user_id', $this->user->id)->firstOrFail()->load('book.stock');
+            $booking = $this->model->whereUserId($this->user->id)->firstOrFail()->load('book.stock');
         } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Do not have any booking');
         }
         return BookingResource::make($booking);
     }
 
-    /**
-     * Create a new booking for the current user.
-     *
-     * @param int $id The book id
-     * @return \App\Http\Resources\BookingResource
-     * @throws \Exception If the user already has a booking
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the book is not found or not available
-     */
     public function store(int $id): BookingResource
     {
         $userAlreadyHasBooking = $this->user->bookings;
+        $userHasFines = $this->user->fines;
         $defaultDueDate = 20;
 
         try {
@@ -85,54 +48,45 @@ class BookingController extends Controller
 
         if ($userAlreadyHasBooking) {
             throw new \Exception('You already have a booking, please return it before borrowing a new one');
+        } elseif ($userHasFines) {
+            throw new \Exception('You have a fine, please pay it before borrowing a new one');
         } elseif (!$stock->available) {
             throw new NotFoundHttpException('Book not available for borrowing, please try again later');
         }
 
-        Booking::create([
+        // TODO
+        $booking = Booking::create([
             'book_id' => $book->id,
             'user_id' => $this->user->id,
             'borrowed_at' => now(),
-            'due_date' => now()->addDay($defaultDueDate),
-        ]);
+            'due_date' => now()->addMinute(),
+            //'due_date' => now()->addDay($defaultDueDate),
+        ])->load('book.stock');
 
-        $booking = $this->model->where('user_id', $this->user->id)->firstOrFail()->load('book.stock');
-        $stock = $booking->load('book.stock')->book->stock;
+        $booking->refresh();
         $stock->decrement('quantity');
 
-        if ($stock->quantity === 1) {
+        if ($stock->quantity < 2) {
             $stock->update(['available' => false]);
         }
 
-        return BookingResource::make($booking)
-            ->additional(['message' => 'Booking created successfully']);
+        return BookingResource::make($booking);
     }
 
-    /**
-     * Return a specific booking of the current user.
-     *
-     * @return \App\Http\Resources\BookingResource
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the user does not have any booking to return
-     */
     public function return(): BookingResource
     {
         try {
-            $booking = $this->model->where('user_id', $this->user->id)->firstOrFail()->load('book.stock');
+            $booking = $this->model->whereUserId($this->user->id)->firstOrFail()->load('book.stock');
         } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Do not have any booking to return');
         }
 
         $stock = $booking->book->stock;
-
         $stock->increment('quantity');
         $stock->update(['available' => true]);
-        $stock->save();
-
         $booking->update(['status' => 'returned', 'returned_at' => now()]);
-        $booking->save();
         $booking->delete();
 
-        return BookingResource::make($booking)
-            ->additional(['message' => 'Booking returned successfully']);
+        return BookingResource::make($booking);
     }
 }

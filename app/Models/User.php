@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Booking::class);
     }
+
+    public function fines(): HasOne
+    {
+        return $this->hasOne(Fine::class);
+    }
 }

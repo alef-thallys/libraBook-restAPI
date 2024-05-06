@@ -29,4 +29,9 @@ class Booking extends Model
     {
         return $this->belongsTo(Book::class);
     }
+
+    public function fine(): BelongsTo
+    {
+        return $this->belongsTo(Fine::class);
+    }
 }

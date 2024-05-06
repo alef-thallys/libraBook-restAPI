@@ -21,7 +21,8 @@ class AdminFineResource extends JsonResource
             'amount' => $this->amount,
             'paid' => $this->paid ? 'Yes' : 'No',
 
-            'created_at' => $this->created_at->diffForHumans(),
-            'updated_at' => $this->updated_at->diffForHumans()];
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
+        ];
     }
 }

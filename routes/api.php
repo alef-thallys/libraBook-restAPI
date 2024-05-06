@@ -16,7 +16,6 @@ Route::prefix('V1')->group(function () {
     Route::post('users/login', [UserController::class, 'login']);
 
     Route::middleware(['auth:sanctum'])->group(function () {
-
         Route::middleware(['abilities:role:user'])->group(function () {
             // Users endpoints
             Route::get('users/profile', [UserController::class, 'show']);
@@ -37,31 +36,32 @@ Route::prefix('V1')->group(function () {
             Route::post('fine/pay', [FineController::class, 'pay']);
         });
 
-        // Route::middleware(['abilities:role:admin'])->prefix('admin')->group(function () {
-        //     // Users endpoints
-        //     Route::get('users', [AdminUserController::class, 'index']);
-        //     Route::get('users/{id}', [AdminUserController::class, 'show']);
-        //     Route::delete('users/{id}', [AdminUserController::class, 'destroy']);
+        Route::middleware(['abilities:role:admin'])->prefix('admin')->group(function () {
+            // Users endpoints
+            Route::get('users', [AdminUserController::class, 'index']);
+            Route::get('users/{id}', [AdminUserController::class, 'show'])->where('id', '[0-9]+');
+            Route::delete('users/{id}', [AdminUserController::class, 'destroy'])->where('id', '[0-9]+');
 
-        //     // Book endpoints       
-        //     Route::get('books/{title?}', [AdminBookController::class, 'index']);
-        //     Route::get('books/{id}', [AdminBookController::class, 'show']);
-        //     Route::post('books', [AdminBookController::class, 'store']);
-        //     Route::put('books/{id}', [AdminBookController::class, 'update']);
-        //     Route::delete('books/{id}', [AdminBookController::class, 'destroy']);
+            // Book endpoints       
+            Route::get('books/{title?}', [AdminBookController::class, 'index'])->where('title', '[a-zA-Z]+');
+            Route::get('books/{id}', [AdminBookController::class, 'show'])->where('id', '[0-9]+');
+            Route::post('books', [AdminBookController::class, 'store']);
+            Route::put('books/{id}', [AdminBookController::class, 'update'])->where('id', '[0-9]+');
+            Route::delete('books/{id}', [AdminBookController::class, 'destroy'])->where('id', '[0-9]+');
 
-        //     // Bookings endpoints
-        //     Route::get('bookings/{user_id?}', [AdminBookingController::class, 'index']);
-        //     Route::get('bookings/{id}', [AdminBookingController::class, 'show']);
+            // Bookings endpoints
+            Route::get('bookings', [AdminBookingController::class, 'index']);
+            Route::get('bookings/{id}', [AdminBookingController::class, 'show'])->where('id', '[0-9]+');
 
-        //     // Fines endpoints
-        //     Route::get('fines/{user_id?}', [AdminFineController::class, 'index']);
-        //     Route::get('fines/{id}', [AdminFineController::class, 'show']);
+            // Fines endpoints
+            Route::get('fines', [AdminFineController::class, 'index']);
+            Route::get('fines/{id}', [AdminFineController::class, 'show'])->where('id', '[0-9]+');
 
-        //     // Stock endpoints
-        //     Route::get('stock', [AdminStockController::class, 'index']);
-        //     Route::get('stock/{id}', [AdminStockController::class, 'show']);
-        //     Route::put('stock/{id}', [AdminStockController::class, 'update']);
-        // });
+            // Stock endpoints
+            Route::get('stock', [AdminStockController::class, 'index']);
+            Route::get('stock/{id}', [AdminStockController::class, 'show'])->where('id', '[0-9]+');
+            Route::put('stock/{id}/{quantity}', [AdminStockController::class, 'update'])->where('id', '[0-9]+')
+                ->where('quantity', '[0-9]+');
+        });
     });
 });

@@ -24,16 +24,10 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        User::create([
-            'name' => 'user',
-            'email' => 'user@localhost',
-            'password' => Hash::make('12345678Abc'),
-            'role' => 'user',
-        ]);
-
-        User::factory(10)->create();
         Stock::factory(10)->create();
-        Booking::factory(10)->create();
-        Fine::factory(10)->create();
+
+        //  User::factory(10)->create();
+        // Booking::factory(10)->create();
+        // Fine::factory(10)->create();
     }
 }

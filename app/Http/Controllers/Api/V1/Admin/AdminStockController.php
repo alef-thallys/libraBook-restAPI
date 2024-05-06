@@ -6,74 +6,54 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\AdminStockCollection;
 use App\Http\Resources\Admin\AdminStockResource;
 use App\Models\Stock;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdminStockController extends Controller
 {
-    /**
-     * Returns a paginated list of all stock items
-     *
-     * @return AdminStockCollection
-     * @throws NotFoundHttpException
-     */
+    protected $model;
+
+    public function __construct(Stock $model)
+    {
+        $this->model = $model;
+    }
+
     public function index()
     {
-        $stock = Stock::paginate(20);
-
+        $stock = $this->model::paginate(20);
         if ($stock->isEmpty()) {
             throw new NotFoundHttpException('No stock to show');
         }
-
-        return AdminStockCollection::make($stock);
+        return new AdminStockCollection($stock);
     }
 
-    /**
-     * Returns a single stock item by its ID
-     *
-     * @param int $id The stock item ID
-     * @return AdminStockResource
-     * @throws NotFoundHttpException
-     */
     public function show(int $id)
     {
-        $stock = Stock::find($id);
-
-        if (!$stock) {
+        try {
+            $stock = $this->model->findOrFail($id);
+        } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Stock not found');
         }
-
-        return AdminStockResource::make($stock);
+        return new AdminStockResource($stock);
     }
 
-    /**
-     * Updates a stock item by its ID
-     *
-     * @param int $id The stock item ID
-     * @param Request $request The request with the updated data
-     * @return AdminStockResource
-     * @throws NotFoundHttpException
-     */
-    public function update(int $id, Request $request)
+    public function update(int $id, int $quantity)
     {
-        $stock = Stock::find($id);
-
-        if (!$stock) {
+        try {
+            $stock = $this->model->findOrFail($id);
+        } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Stock not found');
         }
 
-        $data = $request->validate([
-            'quantity' => ['required', 'integer', 'min:0'],
-        ]);
+        $available = false;
+        if ($quantity > 0) $available = true;
 
-        if ($data['quantity'] == 0) {
-            $data['available'] = false;
-        } else {
-            $data['available'] = true;
-        }
+        $data = [
+            'available' => $available,
+            'quantity' => $quantity
+        ];
 
         $stock->update($data);
-
-        return AdminStockResource::make($stock)->additional(['message' => 'Stock updated successfully']);
+        return new AdminStockResource($stock);
     }
 }
