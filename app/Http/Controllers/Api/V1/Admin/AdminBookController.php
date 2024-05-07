@@ -29,7 +29,7 @@ class AdminBookController extends Controller
         } elseif ($title) {
             $books = $this->model::where('title', 'like', '%' . $title . '%')->paginate(20);
         }
-        return new AdminBookCollection($books);
+        return AdminBookCollection::make($books);
     }
 
     public function show(int $id): AdminBookResource
@@ -39,19 +39,21 @@ class AdminBookController extends Controller
         } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Book not found');
         }
-        return new AdminBookResource($book);
+        return AdminBookResource::make($book);
     }
 
-    public function store(BookStoreRequest $request): AdminBookResource
+    public function store(BookStoreRequest $request): JsonResponse
     {
         $data = $request->validated();
         $book = $this->model::create($data);
         $book->stock()->create();
 
-        return new AdminBookResource($book);
+        return response()->json([
+            'message' => 'Book created successfully!'
+        ], 201);
     }
 
-    public function update(BookUpdateRequest $request, int $id): AdminBookResource
+    public function update(BookUpdateRequest $request, int $id): JsonResponse
     {
         try {
             $book = $this->model::findOrFail($id);
@@ -59,12 +61,11 @@ class AdminBookController extends Controller
             throw new NotFoundHttpException('Book not found');
         }
 
-        $data = $request->validate([
-            'title' => ['nullable', 'string', 'max:255', 'unique:books,title,' . $id],
-        ]);
-
+        $data = $request->validated();
         $book->update($data);
-        return new AdminBookResource($book);
+        return response()->json([
+            'message' => 'Book updated successfully!'
+        ], 200);
     }
 
     public function destroy(int $id): JsonResponse
@@ -80,6 +81,8 @@ class AdminBookController extends Controller
         }
 
         $book->delete();
-        return response()->json(['message' => 'Book deleted successfully']);
+        return response()->json([
+            'message' => 'Book deleted successfully!'
+        ], 200);
     }
 }

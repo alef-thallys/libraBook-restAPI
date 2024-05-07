@@ -23,9 +23,9 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users,email,' . $this->user()->id],
-            'password' => ['nullable', Password::defaults()],
+            'name' => ['string', 'max:255'],
+            'email' => ['string', 'email', 'max:255', 'unique:users,email,' . $this->user()->id],
+            'password' => [Password::defaults()],
         ];
     }
 }

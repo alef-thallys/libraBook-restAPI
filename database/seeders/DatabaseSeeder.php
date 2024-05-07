@@ -25,9 +25,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Stock::factory(10)->create();
-
-        //  User::factory(10)->create();
-        // Booking::factory(10)->create();
-        // Fine::factory(10)->create();
+        Booking::factory(9)->create();
+        Fine::factory(10)->create();
     }
 }

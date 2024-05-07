@@ -22,15 +22,18 @@ class UserController extends Controller
         $this->model = $user;
     }
 
-    public function store(UserStoreRequest $request): UserResource
+    public function store(UserStoreRequest $request): JsonResponse
     {
         $data = $request->validated();
         $data['password'] = bcrypt($data['password']);
-        $user = $this->model->create($data);
-        return UserResource::make($user);
+        $this->model->create($data);
+
+        return response()->json([
+            'message' => 'User registered successfully!'
+        ], 201);
     }
 
-    public function login(UserLoginRequest $request): UserResource
+    public function login(UserLoginRequest $request): JsonResponse
     {
         $data = $request->validated();
         $user = $this->model->where('email', $data['email'])->first();
@@ -43,7 +46,11 @@ class UserController extends Controller
 
         $abilities = ['role:' . $user->role];
         $token = $user->createToken('auth-token', $abilities);
-        return UserResource::make($user)->additional(['token' => $token->plainTextToken]);
+
+        return response()->json([
+            'access_token' => $token->plainTextToken,
+            'token_type' => 'Bearer',
+        ], 200);
     }
 
     public function show(): UserResource
@@ -52,7 +59,7 @@ class UserController extends Controller
         return UserResource::make($user);
     }
 
-    public function update(UserUpdateRequest $request): UserResource
+    public function update(UserUpdateRequest $request): JsonResponse
     {
         $data = $request->validated();
         if (isset($data['password'])) {
@@ -61,12 +68,16 @@ class UserController extends Controller
 
         $user = $this->model->find(auth()->user()->id);
         $user->update($data);
-        return UserResource::make($user);
+        return response()->json([
+            'message' => 'Profile updated successfully!'
+        ], 200);
     }
 
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json([
+            'message' => 'Logout successful!'
+        ], 200);
     }
 }

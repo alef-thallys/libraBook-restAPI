@@ -7,6 +7,7 @@ use App\Http\Resources\Admin\AdminStockCollection;
 use App\Http\Resources\Admin\AdminStockResource;
 use App\Models\Stock;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdminStockController extends Controller
@@ -18,26 +19,26 @@ class AdminStockController extends Controller
         $this->model = $model;
     }
 
-    public function index()
+    public function index(): AdminStockCollection
     {
         $stock = $this->model::paginate(20);
         if ($stock->isEmpty()) {
             throw new NotFoundHttpException('No stock to show');
         }
-        return new AdminStockCollection($stock);
+        return AdminStockCollection::make($stock);
     }
 
-    public function show(int $id)
+    public function show(int $id): AdminStockResource
     {
         try {
             $stock = $this->model->findOrFail($id);
         } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Stock not found');
         }
-        return new AdminStockResource($stock);
+        return AdminStockResource::make($stock);
     }
 
-    public function update(int $id, int $quantity)
+    public function update(int $id, int $quantity): JsonResponse
     {
         try {
             $stock = $this->model->findOrFail($id);
@@ -54,6 +55,8 @@ class AdminStockController extends Controller
         ];
 
         $stock->update($data);
-        return new AdminStockResource($stock);
+        return response()->json([
+            'message' => 'Stock quantity updated successfully!'
+        ]);
     }
 }

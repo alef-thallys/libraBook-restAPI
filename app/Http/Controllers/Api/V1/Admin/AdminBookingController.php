@@ -25,7 +25,7 @@ class AdminBookingController extends Controller
             throw new NotFoundHttpException('No bookings to show');
         }
 
-        return new AdminBookingCollection($bookings);
+        return AdminBookingCollection::make($bookings);
     }
 
     public function show(int $id): AdminBookingResource
@@ -35,6 +35,6 @@ class AdminBookingController extends Controller
         } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Booking not found');
         }
-        return new AdminBookingResource($booking);
+        return AdminBookingResource::make($booking);
     }
 }

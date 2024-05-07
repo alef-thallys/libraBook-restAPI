@@ -21,7 +21,7 @@ class FineController extends Controller
         $this->model = $fine;
     }
 
-    public function index()
+    public function show()
     {
         try {
             $fines = $this->model->whereUserId($this->user->id)->firstOrFail()->load('book.bookings');
@@ -47,6 +47,10 @@ class FineController extends Controller
         }
 
         $fine->delete();
-        return response()->json(['message' => 'Fine paid successfully']);
+        Booking::whereUserId($this->user->id)->forceDelete();
+
+        return response()->json([
+            'message' => 'Fine paid successfully!'
+        ], 200);
     }
 }

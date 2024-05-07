@@ -25,7 +25,7 @@ class AdminUserController extends Controller
         if ($users->isEmpty()) {
             throw new NotFoundHttpException('No users to show');
         }
-        return new AdminUserCollection($users);
+        return AdminUserCollection::make($users);
     }
 
     public function show(int $id): AdminUserResource
@@ -35,7 +35,7 @@ class AdminUserController extends Controller
         } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('User not found');
         }
-        return new AdminUserResource($user);
+        return AdminUserResource::make($user);
     }
 
     public function destroy(int $id): JsonResponse
@@ -52,13 +52,15 @@ class AdminUserController extends Controller
             throw new NotFoundHttpException('Admin cannot delete himself');
         } elseif ($user->bookings) {
             throw new NotFoundHttpException('User has active bookings');
+        } elseif ($user->fines) {
+            throw new NotFoundHttpException('User has active fines');
         }
 
-        $user->tokens()->delete();
         $user->delete();
+        $user->tokens()->delete();
 
         return response()->json([
-            'message' => 'User deleted successfully'
+            'message' => 'User deleted successfully!'
         ]);
     }
 }

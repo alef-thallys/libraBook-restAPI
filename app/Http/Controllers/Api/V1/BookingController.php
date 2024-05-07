@@ -7,6 +7,7 @@ use App\Http\Resources\BookingResource;
 use App\Models\Book;
 use App\Models\Booking;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BookingController extends Controller
@@ -22,7 +23,7 @@ class BookingController extends Controller
         $this->book = $book;
     }
 
-    public function index(): BookingResource
+    public function show(): BookingResource
     {
         try {
             $booking = $this->model->whereUserId($this->user->id)->firstOrFail()->load('book.stock');
@@ -32,7 +33,7 @@ class BookingController extends Controller
         return BookingResource::make($booking);
     }
 
-    public function store(int $id): BookingResource
+    public function store(int $id): JsonResponse
     {
         $userAlreadyHasBooking = $this->user->bookings;
         $userHasFines = $this->user->fines;
@@ -54,13 +55,11 @@ class BookingController extends Controller
             throw new NotFoundHttpException('Book not available for borrowing, please try again later');
         }
 
-        // TODO
         $booking = Booking::create([
             'book_id' => $book->id,
             'user_id' => $this->user->id,
             'borrowed_at' => now(),
-            'due_date' => now()->addMinute(),
-            //'due_date' => now()->addDay($defaultDueDate),
+            'due_date' => now()->addDay($defaultDueDate),
         ])->load('book.stock');
 
         $booking->refresh();
@@ -70,11 +69,15 @@ class BookingController extends Controller
             $stock->update(['available' => false]);
         }
 
-        return BookingResource::make($booking);
+        return response()->json([
+            'message' => 'Book reserved successfully!',
+        ], 201);
     }
 
-    public function return(): BookingResource
+    public function return(): JsonResponse
     {
+        $userDoesNotHaveFines = $this->user->fines;
+
         try {
             $booking = $this->model->whereUserId($this->user->id)->firstOrFail()->load('book.stock');
         } catch (ModelNotFoundException $exception) {
@@ -87,6 +90,10 @@ class BookingController extends Controller
         $booking->update(['status' => 'returned', 'returned_at' => now()]);
         $booking->delete();
 
-        return BookingResource::make($booking);
+        if (!$userDoesNotHaveFines) $booking->forceDelete();
+
+        return response()->json([
+            'message' => 'Book returned successfully!'
+        ], 200);
     }
 }

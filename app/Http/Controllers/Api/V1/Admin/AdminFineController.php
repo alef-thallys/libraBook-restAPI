@@ -24,7 +24,7 @@ class AdminFineController extends Controller
         if ($fines->isEmpty()) {
             throw new NotFoundHttpException('No fines to show');
         }
-        return new AdminFineCollection($fines);
+        return AdminFineCollection::make($fines);
     }
 
     public function show(int $id): AdminFineResource
@@ -34,6 +34,6 @@ class AdminFineController extends Controller
         } catch (ModelNotFoundException $exception) {
             throw new NotFoundHttpException('Fine not found');
         }
-        return new AdminFineResource($fine);
+        return AdminFineResource::make($fine);
     }
 }

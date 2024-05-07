@@ -1,48 +1,50 @@
 User Endpoints:
 
-Registration and Authentication:
-  - POST /api/users/register: Register a new user
-  - POST /api/users/login: Login a user
-  - POST /api/users/logout: Logout the authenticated user
+Authentication:
+  - POST /api/V1/users/register: Register a new user
+  - POST /api/V1/users/login: Login as user or admin
+  - POST /api/V1/users/logout: Logout the authenticated user
 
 User Profile:
-  - GET /api/users/profile: Retrieve the authenticated user's profile
-  - PUT /api/users/profile: Update the authenticated user's profile
+  - GET /api/V1/users/profile: Retrieve the authenticated user's profile
+  - PUT /api/V1/users/profile: Update the authenticated user's profile
 
 Books: 
-  - GET /api/books: Retrieve all books
-  - GET /api/books/{id}: Retrieve a specific books by ID
+  - GET /api/V1/books: Retrieve all books
+  - GET /api/V1/books/{id}: Retrieve a specific books by ID
 
 Booking:
-  - GET /api/bookings: Retrieve all bookings
-  - GET /api/bookings/{id}: Retrieve a specific bookings by ID
-  - POST /api/books/{id}/bookings: Create a booking
+  - GET /api/V1/booking: Booking
+  - POST /api/V1/books/{id}/booking: Create a booking
+  - PUT /api/V1/booking/return: Return a booking
 
 Fines:
-  - GET /api/fines: Retrieve all fines
-  - GET /api/fines/{id}: Retrieve a specific fine by ID
-  - POST /api/fines/pay/all: Pay all fines
-  - POST /api/fines/{id}/pay: Pay specific fine
+  - GET /api/V1/fine: Retrieve fine
+  - POST /api/V1/fine/pay: Pay fine
 
 Admin Endpoints:
 
 Users:
-  - GET /api/admin/users: Retrieve all users
-  - GET /api/admin/users/{id}: Retrieve a specific user by ID
-  - DELETE /api/admin/users/{id}: Delete a user
-
-Bookings:                 
-    You can retrive all bookings with a filter parameter of active, returned or overdue; 
-    e.g. /api/admin/bookings?filter=active
-
-  - GET /api/admin/bookings: Retrieve all bookings
-  - GET /api/admin/bookings/{id}: Retrieve a specific booking by ID
-  - GET /api/admin/bookings/user/{id}: Retrieve all bookings of a specific user
-  - PUT /api/admin/bookings/{id}/return: Mark a booking as returned
+  - GET /api/V1/admin/users: Retrieve all users
+  - GET /api/V1/admin/users/{id}: Retrieve a specific user by ID
+  - DELETE /api/V1/admin/users/{id}: Delete a user
 
 Books:
-  - GET /api/admin/books: Retrieve all books
-  - GET /api/admin/books/{id}: Retrieve a specific book by ID
-  - POST /api/admin/books: Create a new book
-  - PUT /api/admin/books/{id}: Update a book
-  - DELETE /api/admin/books/{id}: Delete a book
+  - GET /api/V1/admin/books: Retrieve all books
+  - GET /api/V1/admin/books/{id}: Retrieve a specific book by ID
+  - POST /api/V1/admin/books: Create a new book
+  - PUT /api/V1/admin/books/{id}: Update a book
+  - DELETE /api/V1/admin/books/{id}: Delete a book
+
+Bookings:                 
+  - GET /api/V1/admin/bookings: Retrieve all bookings
+  - GET /api/V1/admin/bookings/{id}: Retrieve a specific booking by ID
+
+Fines:
+  - GET /api/V1/admin/fines: Retrieve all fines
+  - GET /api/V1/admin/fines/{id}: Retrieve a specific fine by ID
+
+Stock:
+  - GET /api/V1/admin/stock: Retrieve all stock
+  - GET /api/V1/admin/stock/{id}: Retrieve a specific stock by ID
+  - PUT /api/V1/admin/stock/{id}/{quantity}: Update a stock quantity

@@ -22,9 +22,10 @@ class BookUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'author' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:500'],
-            'published_year' => ['nullable', 'integer', 'between:1000,' . date('Y')],
+            'title' => ['string', 'max:255'],
+            'author' => ['string', 'max:255'],
+            'description' => ['string', 'max:500'],
+            'published_year' => ['integer', 'between:1000,' . date('Y')],
         ];
     }
 }

@@ -19,11 +19,12 @@ class BookingFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::inRandomOrder()->first()->id,
+            'user_id' => User::factory()->create()->id,
             'book_id' => Book::inRandomOrder()->first()->id,
 
             'borrowed_at' => now(),
             'due_date' => now()->addMinute(),
             'returned_at' => null,
-        ]; }
+        ];
+    }
 }

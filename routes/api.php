@@ -27,12 +27,12 @@ Route::prefix('V1')->group(function () {
             Route::get('books/{id}', [BookController::class, 'show'])->where('id', '[0-9]+');
 
             // Bookings endpoints
-            Route::get('booking', [BookingController::class, 'index']);
+            Route::get('booking', [BookingController::class, 'show']);
             Route::post('books/{id}/booking', [BookingController::class, 'store'])->where('id', '[0-9]+');
             Route::put('booking/return', [BookingController::class, 'return']);
 
             // Fines endpoints
-            Route::get('fine', [FineController::class, 'index']);
+            Route::get('fine', [FineController::class, 'show']);
             Route::post('fine/pay', [FineController::class, 'pay']);
         });
 
@@ -60,8 +60,7 @@ Route::prefix('V1')->group(function () {
             // Stock endpoints
             Route::get('stock', [AdminStockController::class, 'index']);
             Route::get('stock/{id}', [AdminStockController::class, 'show'])->where('id', '[0-9]+');
-            Route::put('stock/{id}/{quantity}', [AdminStockController::class, 'update'])->where('id', '[0-9]+')
-                ->where('quantity', '[0-9]+');
+            Route::put('stock/{id}/{quantity}', [AdminStockController::class, 'update'])->where('id', '[0-9]+')->where('quantity', '[0-9]+');
         });
     });
 });
