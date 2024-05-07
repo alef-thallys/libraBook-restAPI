@@ -1,3 +1,5 @@
+# Api Documentation
+
 # User Endpoints
 
 ## Authentication
