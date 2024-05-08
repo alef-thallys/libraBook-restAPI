@@ -2,16 +2,16 @@
 
 ## Authentication
 
-**POST** - Register a new user
-/api/V1/users/register
+**POST** - Register a new user:<br/> 
+**/api/V1/users/register**
 
 Query Parameters:<br/> 
 **name**: string<br/>
 **email**: string<br/>
 **password**: string
 
-**POST** - Login as user
-/api/V1/users/login
+**POST** - Login as user:<br/> 
+**/api/V1/users/login**
 
 Query Parameters:<br/> 
 **email**: string<br/>
@@ -19,16 +19,16 @@ Query Parameters:<br/>
 
 #### Everything under this line needs beared token authentication
 
-**POST** - Logout the authenticated user
-/api/V1/users/logout
+**POST** - Logout the authenticated user:<br/> 
+**/api/V1/users/logout**
 
 ## User Profile
 
-**GET** - Retrieve the authenticated user's profile
-/api/V1/users/profile
+**GET** - Retrieve the authenticated user's profile:<br/> 
+**/api/V1/users/profile**
 
-**PUT** - Update the authenticated user's profile
-/api/V1/users/profile
+**PUT** - Update the authenticated user's profile:<br/> 
+**/api/V1/users/profile**
 
 Query Parameters:<br/>
 **name**: string<br/>
@@ -37,37 +37,37 @@ Query Parameters:<br/>
 
 ## Books
 
-**GET** - Retrieve all books
-/api/V1/books
+**GET** - Retrieve all books:<br/> 
+**/api/V1/books**
 
-**GET** - Retrieve a specific books by ID
-/api/V1/books/{id}
+**GET** - Retrieve a specific books by ID:<br/> 
+**/api/V1/books/{id}**
 
 ## Booking
 
-**GET** - Retrieve booking
-/api/V1/booking
+**GET** - Retrieve booking:<br/> 
+**/api/V1/booking**
 
-**POST** - Create a booking
-/api/V1/books/{id}/booking
+**POST** - Create a booking:<br/> 
+**/api/V1/books/{id}/booking**
 
-**PUT** - Return a booking
-/api/V1/booking/return
+**PUT** - Return a booking:<br/> 
+**/api/V1/booking/return**
 
 ### Fines
 
-**GET** - Retrieve fine
-/api/V1/fine
+**GET** - Retrieve fine:<br/> 
+**/api/V1/fine**
 
-**POST** - Pay fine
-/api/V1/fine/pay
+**POST** - Pay fine:<br/> 
+**/api/V1/fine/pay**
 
 # Admin Endpoints
 
 ## Authentication
 
-**POST** - Login as admin
-/api/V1/users/login
+**POST** - Login as admin:<br/> 
+**/api/V1/users/login**
 
 Query Parameters:<br/> 
 **name**: string<br/>
@@ -76,25 +76,25 @@ Query Parameters:<br/>
 
 ## Users
 
-**GET** - Retrieve all users
-/api/V1/admin/users
+**GET** - Retrieve all users:<br/> 
+**/api/V1/admin/users**
 
-**GET** - Retrieve a specific user by ID
-/api/V1/admin/users/{id}
+**GET** - Retrieve a specific user by ID:<br/> 
+**/api/V1/admin/users/{id}**
 
-**DELETE** - Delete a user
-/api/V1/admin/users/{id}
+**DELETE** - Delete a user:<br/> 
+**/api/V1/admin/users/{id}**
 
 ## Books
 
-**GET** - Retrieve all books
-/api/V1/admin/books
+**GET** - Retrieve all books:<br/> 
+**/api/V1/admin/books**
 
-**GET** - Retrieve a specific book by ID
-/api/V1/admin/books/{id}
+**GET** - Retrieve a specific book by ID:<br/> 
+**/api/V1/admin/books/{id}**
 
-**POST** - Create a book
-/api/V1/admin/books
+**POST** - Create a book:<br/> 
+**/api/V1/admin/books**
 
 Query Parameters:<br/>
 **title**: string<br/>
@@ -102,8 +102,8 @@ Query Parameters:<br/>
 **description**: string<br/>
 **published_year**: string
 
-**PUT** - Update a book
-/api/V1/admin/books/{id}
+**PUT** - Update a book:<br/> 
+**/api/V1/admin/books/{id}**
 
 Query Parameters:<br/>
 **title**: string<br/>
@@ -111,32 +111,32 @@ Query Parameters:<br/>
 **description**: strin<br/>
 **published_year**: string
 
-**DELETE** - Delete a book
-/api/V1/admin/books/{id}
+**DELETE** - Delete a book:<br/> 
+**/api/V1/admin/books/{id}**
 
 ## Bookings
 
-**GET** - Retrieve all bookings 
-/api/V1/admin/bookings
+**GET** - Retrieve all bookings:<br/> 
+**/api/V1/admin/bookings**
 
-**GET** - Retrieve a specific booking by ID
-/api/V1/admin/bookings/{id}
+**GET** - Retrieve a specific booking by ID:<br/> 
+**/api/V1/admin/bookings/{id}**
 
 ## Fines
 
-**GET** - Retrieve all fines
-/api/V1/admin/fines
+**GET** - Retrieve all fines:<br/> 
+**/api/V1/admin/fines**
 
-**GET** - Retrieve a specific fine by ID
-/api/V1/admin/fines/{id}
+**GET** - Retrieve a specific fine by ID:<br/> 
+**/api/V1/admin/fines/{id}**
 
 ## Stock
 
-**GET** - Retrieve all stock
-/api/V1/admin/stock
+**GET** - Retrieve all stock:<br/> 
+**/api/V1/admin/stock**
 
-**GET** - Retrieve a specific stock by ID
-/api/V1/admin/stock/{id}
+**GET** - Retrieve a specific stock by ID:<br/> 
+**/api/V1/admin/stock/{id}**
 
-**PUT** - Update a stock quantity
-/api/V1/admin/stock/{id}/{quantity}
+**PUT** - Update a stock quantity:<br/> 
+**/api/V1/admin/stock/{id}/{quantity}**
