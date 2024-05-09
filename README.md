@@ -1,100 +1,101 @@
-# User Endpoints
+# LibraBook
 
-## Authentication
+This simple RESTful API project implements a Library Management System (LMS) aimed at simplifying the borrowing and lending of books.<br/>
+It facilitates smooth interactions for both users and administrators, offering comprehensive features to efficiently handle books, bookings, fines, and user profiles.<br/> 
 
-**POST** - Register a new user:<br/> 
-**/api/V1/users/register**
+## How to use:
+
+## User endpoints:
+
+Register a new user:<br/> 
+**POST: ```/api/V1/users/register```**
 
 Query Parameters:<br/> 
 **name**: string<br/>
 **email**: string<br/>
 **password**: string
 
-**POST** - Login as user:<br/> 
-**/api/V1/users/login**
+Login as user:<br/> 
+**POST: ```/api/V1/users/login```**
 
 Query Parameters:<br/> 
 **email**: string<br/>
 **password**: string
 
-#### Everything under this line needs beared token authentication
+##### Everything under this line needs beared token authentication
 
-**POST** - Logout the authenticated user:<br/> 
-**/api/V1/users/logout**
+Logout the authenticated user:<br/> 
+**POST: ```/api/V1/users/logout```**
 
-## User Profile
+Retrieve the authenticated user's profile:<br/> 
+**GET: ```/api/V1/users/profile```**
 
-**GET** - Retrieve the authenticated user's profile:<br/> 
-**/api/V1/users/profile**
-
-**PUT** - Update the authenticated user's profile:<br/> 
-**/api/V1/users/profile**
+Update the authenticated user's profile:<br/> 
+**PUT: ```/api/V1/users/profile```**
 
 Query Parameters:<br/>
 **name**: string<br/>
 **email**: string<br/>
 **password**: string
 
-## Books
+### Books endpoints:
 
-**GET** - Retrieve all books:<br/> 
-**/api/V1/books**
+Retrieve all books:<br/> 
+**GET: ```/api/V1/books```**
 
-**GET** - Retrieve a specific books by ID:<br/> 
-**/api/V1/books/{id}**
+Retrieve a specific books by ID:<br/> 
+**GET: ```/api/V1/books/{id}```**
 
-## Booking
+### Bookings endpoints:
 
-**GET** - Retrieve booking:<br/> 
-**/api/V1/booking**
+Retrieve booking:<br/> 
+**GET: ```/api/V1/booking```**
 
-**POST** - Create a booking:<br/> 
-**/api/V1/books/{id}/booking**
+Create a booking:<br/> 
+**POST: ```/api/V1/books/{id}/booking```**
 
-**PUT** - Return a booking:<br/> 
-**/api/V1/booking/return**
+Return a booking:<br/> 
+**PUT: ```/api/V1/booking/return```**
 
-### Fines
+### Fines endpoints:
 
-**GET** - Retrieve fine:<br/> 
-**/api/V1/fine**
+Retrieve fine:<br/> 
+**GET: ```/api/V1/fine```**
 
-**POST** - Pay fine:<br/> 
-**/api/V1/fine/pay**
+Pay fine:<br/> 
+**POST: ```/api/V1/fine/pay```**
 
-# Admin Endpoints
+## Admin endpoints
 
-## Authentication
-
-**POST** - Login as admin:<br/> 
-**/api/V1/users/login**
+Login as admin:<br/> 
+**POST: ```/api/V1/users/login```**
 
 Query Parameters:<br/> 
 **name**: string<br/>
 **email**: string<br/>
 **password**: string
 
-## Users
+### Users endpoints
 
-**GET** - Retrieve all users:<br/> 
-**/api/V1/admin/users**
+Retrieve all users:<br/> 
+**GET: ```/api/V1/admin/users```**
 
-**GET** - Retrieve a specific user by ID:<br/> 
-**/api/V1/admin/users/{id}**
+Retrieve a specific user by ID:<br/> 
+**GET: ```/api/V1/admin/users/{id}```**
 
-**DELETE** - Delete a user:<br/> 
-**/api/V1/admin/users/{id}**
+Delete a user:<br/> 
+**DELETE: ```/api/V1/admin/users/{id}```**
 
-## Books
+### Books endpoints
 
-**GET** - Retrieve all books:<br/> 
-**/api/V1/admin/books**
+Retrieve all books:<br/> 
+**GET: ```/api/V1/admin/books```**
 
-**GET** - Retrieve a specific book by ID:<br/> 
-**/api/V1/admin/books/{id}**
+Retrieve a specific book by ID:<br/> 
+**GET: ```/api/V1/admin/books/{id}```**
 
-**POST** - Create a book:<br/> 
-**/api/V1/admin/books**
+Create a book:<br/> 
+**POST: ```/api/V1/admin/books```**
 
 Query Parameters:<br/>
 **title**: string<br/>
@@ -102,8 +103,8 @@ Query Parameters:<br/>
 **description**: string<br/>
 **published_year**: string
 
-**PUT** - Update a book:<br/> 
-**/api/V1/admin/books/{id}**
+Update a book:<br/> 
+**PUT: ```/api/V1/admin/books/{id}```**
 
 Query Parameters:<br/>
 **title**: string<br/>
@@ -111,32 +112,32 @@ Query Parameters:<br/>
 **description**: strin<br/>
 **published_year**: string
 
-**DELETE** - Delete a book:<br/> 
-**/api/V1/admin/books/{id}**
+Delete a book:<br/> 
+**DELETE: ```/api/V1/admin/books/{id}```**
 
-## Bookings
+### Bookings endpoints
 
-**GET** - Retrieve all bookings:<br/> 
-**/api/V1/admin/bookings**
+Retrieve all bookings:<br/> 
+**GET: ```/api/V1/admin/bookings```**
 
-**GET** - Retrieve a specific booking by ID:<br/> 
-**/api/V1/admin/bookings/{id}**
+Retrieve a specific booking by ID:<br/> 
+**GET: ```/api/V1/admin/bookings/{id}```**
 
-## Fines
+### Fines endpoints
 
-**GET** - Retrieve all fines:<br/> 
-**/api/V1/admin/fines**
+Retrieve all fines:<br/> 
+**GET: ```/api/V1/admin/fines```**
 
-**GET** - Retrieve a specific fine by ID:<br/> 
-**/api/V1/admin/fines/{id}**
+Retrieve a specific fine by ID:<br/> 
+**GET: ```/api/V1/admin/fines/{id}```**
 
-## Stock
+### Stock endpoints
 
-**GET** - Retrieve all stock:<br/> 
-**/api/V1/admin/stock**
+Retrieve all stock:<br/> 
+**GET: ```/api/V1/admin/stock```**
 
-**GET** - Retrieve a specific stock by ID:<br/> 
-**/api/V1/admin/stock/{id}**
+Retrieve a specific stock by ID:<br/> 
+**GET: ```/api/V1/admin/stock/{id}```**
 
-**PUT** - Update a stock quantity:<br/> 
-**/api/V1/admin/stock/{id}/{quantity}**
+Update a stock quantity:<br/> 
+**PUT: ```/api/V1/admin/stock/{id}/{quantity}```**
